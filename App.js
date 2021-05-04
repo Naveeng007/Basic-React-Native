@@ -1,12 +1,27 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useState} from 'react';
+import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
 export default function App() {
+  const [Output,setOutput]=useState('initial value')
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={{borderColor:'red',height:100,borderWidth:3}}>
+      <Text>part1</Text>
+      <View style={{borderColor:'black',borderWidth:3,height:100}}>
+        <Text>part2</Text>
+      </View>
+      <View style={{borderColor:'black',borderWidth:3,height:100}}>
+        <Text>part2</Text>
+      </View>
+      <View style={{borderColor:'black',borderWidth:3,height:200}}>
+        <Text>part2</Text>
+      </View>
+      <View style={{borderColor:'black',borderWidth:3,height:200}}>
+        <Text>part2</Text>
+      </View>
+      <View style={{borderColor:'black',borderWidth:3,height:200}}>
+        <Text>part2</Text>
+      </View>
     </View>
   );
 }
