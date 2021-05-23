@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "rn-first-app",
+    "name": "Get Vaccinated",
     "slug": "rn-first-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -16,14 +16,12 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/vaccine.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.naveeng007.rnfirstapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
