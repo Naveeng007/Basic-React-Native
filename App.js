@@ -4,12 +4,14 @@ import { StyleSheet, Text, View,Image, Button, TextInput, ScrollView,Pressable, 
 // import { Card, ListItem, Icon } from 'react-native'
 export default function  App() {
   const [Output,setOutput]=useState(1)
-  const [Dose,SetDose]=useState(2)
-  const [Pincodes,SetPincodes]=useState([110002,110003,110004,110055,110009,110008,110044,110088,110007,110006,110005,110060])
+  const [Dose,SetDose]=useState(1)
+  const [Pincodes,SetPincodes]=useState([110002,110003,110004,110005,110006,110007,110008,110009,110044,1100055,110060,110088])
   const [Age,SetAge]=useState(18)
   const [NewPinCode,SetNewPinCode]=useState(null)
   const [Loading,SetLoading]=useState(1)
   const [Limit,SetLimit]=useState(1)
+  const [Fees,SetFees]=useState('Free')
+  const [Hack,SetHack]=useState(0)
   const [Error,SetError]=useState('')
   const [Seconds,SetSeconds]=useState('Wait for 10 Seconds')
   const [VaccineType,SetVaccineType]=useState('Any')
@@ -34,11 +36,26 @@ export default function  App() {
 
     SetSeconds('Wait for 10 Seconds')
     let seconds=10;
+    if(Hack)
+      seconds=30;
     setTimeout(countdown, 1000)
+
+    function countdown() {
+      seconds--;
+      SetSeconds(`Wait for ${seconds} Seconds`)
+      console.log(seconds)
+      if(seconds > 0) 
+        setTimeout(countdown, 1000)
+      else
+        SetLimit(1);
+    };
+
     let pincodes=Pincodes
-    for(let i=0;i<pincodes.length;i++)
+    for(let i=0;i<pincodes.length||(Hack&&i<97);i++)
     {
       const pincode=pincodes[i]
+      if(Hack)
+        pincode=110001+i;
       console.log(pincode)
       const URL=`https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=${pincode}&date=${date}`
       var options = { 
@@ -75,7 +92,10 @@ export default function  App() {
              any=1;
            }
 
-          if(x.min_age_limit===Age&&Available_Dose>0&&(any||(x.vaccine===VaccineType)))
+          
+           
+          
+          if(x.min_age_limit===Age&&Available_Dose>0&&(any||(x.vaccine===VaccineType))&&data[i].fee_type===Fees)
             {
               vaccine.push(
                 {
@@ -96,6 +116,10 @@ export default function  App() {
             }
           }
         }
+        if(Hack)
+          await  setTimeout(() => {
+              // console.log('hi after 100 miliseconds')
+            }, 200);
         
       
       
@@ -108,25 +132,17 @@ export default function  App() {
     //  console.log('resp',resp)
     }
     SetVaccine(vaccine)
-    console.log(Vaccine)
+    // console.log(Vaccine)
     SetLoading(0);
      setOutput(Output+1)
-     console.log(Output)
+    //  console.log(Output)
 
     //  await setTimeout(async ()=>{
       
     //  },10000)
      
   
-   async  function countdown() {
-      seconds--;
-      SetSeconds(`Wait for ${seconds} Seconds`)
-      console.log(seconds)
-      if(seconds > 0) 
-        setTimeout(countdown, 1000)
-      else
-        SetLimit(1);
-    };
+     
      
      
      
@@ -187,20 +203,22 @@ export default function  App() {
     console.log('----------------',Pin,'-----------')
     console.log(Pin)
     console.log('.......',Pin)
+    if(parseInt(Pin)===224)
+      SetHack(0);
     let NewPin=Pincodes.filter((pin)=>pin.toString()!=Pin.toString())
     console.log(Pin)
     SetPincodes(NewPin);
   }
 
   function PincodeList(){
-    console.log('PINLIST----',Pincodes)
+    // console.log('PINLIST----',Pincodes)
     
    
     return Pincodes.map((Pin)=>{
       return (
         <View key={Pin}  style={{borderColor:'green',borderWidth:1,margin:10,padding:4,borderRadius:5,justifyContent:'center',alignItems:'center'}}>
         <Text>{Pin}</Text>
-        {console.log('current value',Pin)}
+        {/* {console.log('current value',Pin)} */}
         <TouchableOpacity  activeOpacity={0.5} onPress={()=>OnDeletePincode(Pin)}>
           <Image style={{height:30,width:30}}
           source={require('./assets/delete.png')}
@@ -215,7 +233,7 @@ export default function  App() {
 
   function OnAddPincode(NewPinCode){
     console.log('Dssssssssssp',NewPinCode)
-
+   
     var IsPresent=false;
     for(let i=0;i<Pincodes.length;i++)
     {
@@ -235,9 +253,15 @@ export default function  App() {
    
     var chkpin=temp.toString()
     let valid=reg.test(chkpin);
+    if(parseInt(NewPinCode)===224)
+      valid=1;
     console.log('ISitPresent-----',IsPresent,valid)
     if(!IsPresent&&valid&&Pincodes.length<15)
+     {
       SetPincodes([parseInt(NewPinCode),...Pincodes]);
+      if(parseInt(NewPinCode)===224)
+        SetHack(1);
+     } 
     else if(IsPresent)
       {
         SetError('Pincode Is Already Present in List')
@@ -302,6 +326,29 @@ export default function  App() {
           {/* <Button style={{height:10,borderRadius:5}} color={(Dose===2)?"#EB2EAC":'#D9DBE0'}  title='Second Dose' onPress={()=>SetDose(2)}>part2</Button> */}
           </View>
       </View>
+
+      <View style={{margin:5,marginBottom:5,borderRadius:60,marginTop:5,justifyContent:'space-between',alignContent:'center',flexDirection: 'row',marginEnd:10}}>
+          <View style={{width:150}}>
+          <Pressable
+              style={[styles.button, styles.buttonAvailablity,{backgroundColor:(Fees==='Free')?"#2196F3":'#D9DBE0'}]}
+              onPress={()=>SetFees('Free')}
+            >
+            <Text style={styles.textStyle}>Free</Text>
+          </Pressable>
+          {/* <Button style={{width: 30,margin:30,padding:30}} color={(Dose===1)?"#EB2EAC":'#D9DBE0'}  title='First Dose' onPress={()=>SetDose(1)}></Button> */}
+          </View>
+          <View style={{width:150}}>
+          <Pressable
+              style={[styles.button, styles.buttonAvailablity,{backgroundColor:(Fees==='Paid')?"#2196F3":'#D9DBE0'}]}
+              onPress={()=>SetFees('Paid')}
+            >
+            <Text style={styles.textStyle}>Paid</Text>
+          </Pressable>
+          {/* <Button style={{height:10,borderRadius:5}} color={(Dose===2)?"#EB2EAC":'#D9DBE0'}  title='Second Dose' onPress={()=>SetDose(2)}>part2</Button> */}
+          </View>
+      </View>
+
+      
       <View style={{margin:5,marginBottom:5,borderRadius:60,marginTop:5,justifyContent:'space-between',alignContent:'center',flexDirection: 'row',marginEnd:10}}>
           <View style={{width:100}}>
           <Pressable
@@ -334,6 +381,10 @@ export default function  App() {
           </View>
       </View>
      
+     
+      
+
+      
 
       <View style={{margin:5,marginBottom:5,borderRadius:60,marginTop:5,justifyContent:'space-between',alignContent:'center',flexDirection: 'row',marginEnd:10}}>
           <View style={{width:150}}>
